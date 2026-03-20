@@ -1,0 +1,6 @@
+{
+  "vocab_size": 50257,
+  "max_length": 128,
+  "data_file": "/root/SmLM/data/tinystories_subset.jsonl",
+  "tokenized_file": "/root/SmLM/data/tokenized.npy"
+}

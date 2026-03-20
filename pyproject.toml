@@ -1,0 +1,15 @@
+[project]
+name = "autoresearch-cpu-slm"
+version = "0.1.0"
+description = "Small Language Model training on CPU with 4GB RAM constraint"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "numpy",
+    "transformers",
+    "datasets",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.backends._legacy:_Backend"
