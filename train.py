@@ -143,7 +143,9 @@ def load_data():
     return tokens, vocab_size
 
 
-def train_epoch(model, dataloader, optimizer, criterion, device, grad_accum_steps=4):
+def train_epoch(
+    model, dataloader, optimizer, criterion, device, grad_accum_steps=4, max_steps=None
+):
     """Train one epoch with gradient accumulation."""
     model.train()
     total_loss = 0
@@ -151,6 +153,9 @@ def train_epoch(model, dataloader, optimizer, criterion, device, grad_accum_step
     optimizer.zero_grad()
 
     for i, (x, y) in enumerate(dataloader):
+        if max_steps is not None and num_batches >= max_steps:
+            break
+
         x, y = x.to(device), y.to(device)
 
         logits, _ = model(x)
@@ -174,14 +179,16 @@ def train_epoch(model, dataloader, optimizer, criterion, device, grad_accum_step
     return total_loss / max(num_batches, 1)
 
 
-def evaluate(model, dataloader, criterion, device):
+def evaluate(model, dataloader, criterion, device, max_steps=None):
     """Evaluate model."""
     model.eval()
     total_loss = 0
     num_batches = 0
 
     with torch.no_grad():
-        for x, y in dataloader:
+        for i, (x, y) in enumerate(dataloader):
+            if max_steps is not None and num_batches >= max_steps:
+                break
             x, y = x.to(device), y.to(device)
             logits, _ = model(x)
             loss = criterion(logits.view(-1, logits.size(-1)), y.view(-1))
@@ -284,10 +291,13 @@ def main():
             criterion,
             device,
             grad_accum_steps=args.grad_accum,
+            max_steps=args.max_steps,
         )
 
         # Evaluate
-        val_loss = evaluate(model, val_loader, criterion, device)
+        val_loss = evaluate(
+            model, val_loader, criterion, device, max_steps=args.max_steps
+        )
 
         scheduler.step()
         epoch_time = time.time() - epoch_start
