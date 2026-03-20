@@ -1,1 +1,2 @@
 commit	val_loss	memory_gb	status	description
+9ffbf9f	7.079500	0.565430	keep	baseline LSTM 1-layer d32 200steps 2epochs
