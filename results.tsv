@@ -1,2 +1,4 @@
 commit	val_loss	memory_gb	status	description
-9ffbf9f	7.079500	0.565430	keep	baseline LSTM 1-layer d32 200steps 2epochs
+9ffbf9f	7.079500	0.565430	keep	baseline FP32 LSTM 1-layer d32 200steps 2epochs
+uncomm	6.536400	0.485000	keep	INT4 STE LSTM 1-layer d32 200steps 2epochs (7.2x compression)
+uncomm	6.618600	0.475000	keep	INT2 STE LSTM 1-layer d32 200steps 2epochs (13.0x compression)
