@@ -8,7 +8,14 @@ dependencies = [
     "numpy",
     "transformers",
     "datasets",
+    "accelerate",
 ]
+
+[tool.setuptools]
+packages = ["."]
+
+[tool.ruff]
+line-length = 88
 
 [build-system]
 requires = ["setuptools"]
