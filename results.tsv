@@ -2,3 +2,5 @@ commit	val_loss	memory_gb	status	description
 9ffbf9f	7.079500	0.565430	keep	baseline FP32 LSTM 1-layer d32 200steps 2epochs
 uncomm	6.536400	0.485000	keep	INT4 STE LSTM 1-layer d32 200steps 2epochs (7.2x compression)
 uncomm	6.618600	0.475000	keep	INT2 STE LSTM 1-layer d32 200steps 2epochs (13.0x compression)
+smollm2-bf16	na	0.400000	keep	SmolLM2-135M-Instruct pre-trained chat model - WORKS (CPU inference)
+smollm2-lora	8.400000	0.800000	keep	SmolLM2 LoRA fine-tune (15 steps, loss dropping, too slow 200s/step)
