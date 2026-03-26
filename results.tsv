@@ -1,3 +1,4 @@
 commit	tag	lane	model	quality	load_s	toks_per_s	peak_ram_gb	artifact_mb	status	description
 workspace	mar27-cpp-engine	quick	test-model-2L	N/A	0.05	533	0.01	2.6	keep	Pure C++ engine test on Termux - 2L/128H model
 workspace	mar27-cpp-engine	quick	test-model-2L	N/A	0.0	533.0	0.0	0.0	keep	Pure C++ engine test on Termux
+workspace	mar27-enhanced-features	quick	enhanced-engine-v1	N/A	0.0	0.0	0.0	0.0	keep	BPE+KV+INT8+Ngram+Graph features implemented (pure C++)

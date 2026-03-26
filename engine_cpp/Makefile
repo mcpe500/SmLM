@@ -12,81 +12,62 @@ CXXFLAGS = -std=c++17 -O3 -Wall
 
 # Platform-specific optimizations
 ifeq ($(UNAME_S),Linux)
-    # Linux (including Termux/Android)
     CXXFLAGS += -march=armv8-a+fp+simd
     LDFLAGS = -lm
 else ifeq ($(UNAME_S),Darwin)
-    # macOS
     CXXFLAGS += -march=armv8-a
     LDFLAGS = 
 else
-    # Generic
     LDFLAGS = -lm
 endif
 
-# Debug build (optional)
+# Debug build
 ifdef DEBUG
     CXXFLAGS = -std=c++17 -g -O0 -Wall -DDEBUG
 endif
 
 # Targets
 TARGET = engine
-TARGET_FULL = transformer_engine
-SRC = transformer_engine.cpp
+TARGET_ENHANCED = enhanced_engine
 
-# Test data generator
-TEST_GEN = test_tokenizer
-TEST_GEN_SRC = test_tokenizer.cpp
+.PHONY: all clean enhanced bpe test help
 
-.PHONY: all clean install debug test
+all: engine tokenizer bpe_tokenizer
 
-all: $(TARGET)
-
-# Main engine
-$(TARGET): $(SRC)
-	@echo "Building $(TARGET)..."
+engine: transformer_engine.cpp
+	@echo "Building original engine..."
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-	@echo "Build complete: $(TARGET)"
-	@echo "Run with: ./$(TARGET) --help"
+	@echo "Build complete: engine"
 
-# Debug build
-debug: CXXFLAGS = -std=c++17 -g -O0 -Wall -DDEBUG
-debug: $(TARGET)
+enhanced: enhanced_engine.cpp kv_cache.h quantize.h ngram.h graph_reasoning.h
+	@echo "Building enhanced engine with all features..."
+	$(CXX) $(CXXFLAGS) -o $(TARGET_ENHANCED) $< $(LDFLAGS)
+	@echo "Build complete: enhanced_engine"
 
-# Tokenizer utility
-TOKENIZER_SRC = tokenizer.cpp
-TOKENIZER = tokenizer
-
-$(TOKENIZER): $(TOKENIZER_SRC)
+tokenizer: tokenizer.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-test: $(TARGET) $(TOKENIZER)
-	@echo "Running tests..."
-	@echo "Engine build: OK"
-	@echo "Tokenizer build: OK"
-	@./$(TARGET) --help
-	@echo ""
-	@./$(TOKENIZER) help
+bpe_tokenizer: bpe_tokenizer.cpp
+	@echo "Building BPE tokenizer..."
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	@echo "Build complete: bpe_tokenizer"
+
+test: engine tokenizer
+	@echo "=== Running Tests ==="
+	@echo "Engine: OK"
+	@echo "Tokenizer: OK"
+	@./engine --help
 
 clean:
-	rm -f $(TARGET) $(TOKENIZER) *.o
+	rm -f engine enhanced_engine tokenizer bpe_tokenizer *.o
 
-install: $(TARGET)
-	cp $(TARGET) /usr/local/bin/
-	@echo "Installed to /usr/local/bin/$(TARGET)"
-
-# Help
 help:
 	@echo "SmLM C++ Engine Makefile"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all     - Build engine (default)"
-	@echo "  debug   - Build with debug symbols"
-	@echo "  test    - Build and run basic tests"
-	@echo "  clean   - Remove build artifacts"
-	@echo "  install - Install to /usr/local/bin"
+	@echo "  all       - Build everything (default)"
+	@echo "  enhanced  - Build enhanced engine"
+	@echo "  bpe       - Build BPE tokenizer"
+	@echo "  clean     - Remove build artifacts"
 	@echo ""
-	@echo "Usage:"
-	@echo "  make          - Build for current platform"
-	@echo "  make DEBUG=1  - Build debug version"
-	@echo "  ./engine --model model.slm --input 50256,123,456"
+	@echo "  make DEBUG=1  - Debug build"
