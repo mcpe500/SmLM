@@ -6,7 +6,16 @@
 
 **Target teacher:** SmolLM2-360M
 
+**Current experiment:** `autoresearch/mar26-smollm2-60m` (60M student)
+
 **Status:** Codebase complete, awaiting PyTorch-enabled environment for training
+
+## Latest Updates
+
+- ✅ Repository pushed to GitHub: https://github.com/mcpe500/SmLM
+- ✅ Experiment branch created: `autoresearch/mar26-smollm2-60m`
+- ✅ Added synthetic data generator for offline testing
+- ✅ Added quick start guide (`python scripts/quick_start.py`)
 
 ## Implemented Components
 
