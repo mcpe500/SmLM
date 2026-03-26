@@ -12,7 +12,7 @@ ENV/
 dist/
 build/
 
-# Checkpoints and artifacts
+# Checkpoints and artifacts (large binary files)
 checkpoints/
 artifacts/
 *.pt
@@ -21,11 +21,10 @@ artifacts/
 *.bin
 *.safetensors
 
-# Results and logs
+# Results and logs (keep results.tsv, ignore others)
 results/
+!results.tsv
 *.log
-*.tsv
-*.json
 reports/
 
 # IDE
