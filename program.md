@@ -6,6 +6,39 @@ The mission is to turn an existing small language model (e.g. GPT-2, SmolLM2-135
 
 This repository is **CPU-first**, assumes **limited RAM**, and may use a **24/7 worker** for long-running jobs. The agent must optimize for practical wins, not clever research tricks that are hard to deploy.
 
+## Two Implementation Tracks
+
+### Track A: Pure C++ (Resource-Constrained Environments)
+
+For Termux/Android or environments without PyTorch:
+
+- **No Python ML dependencies** - pure C++17 inference engine
+- **Binary model format (.slm)** - simple, cross-platform, little-endian
+- **Minimal RAM usage** - 10-500MB depending on model size
+- **Direct compilation** - `make` builds everything
+- **Test model generator** - no PyTorch needed for testing
+
+Use this track when:
+- Running on Termux/Android
+- RAM < 4GB
+- No PyTorch available
+- Need minimal dependencies
+
+### Track B: Python + PyTorch (Full Pipeline)
+
+For servers/workstations with PyTorch support:
+
+- **Full training pipeline** - distillation, pruning, quantization
+- **HuggingFace integration** - load/export any transformer model
+- **ONNX export** - industry-standard runtime format
+- **Comprehensive benchmarks** - quality, latency, memory
+
+Use this track when:
+- Training student models
+- Export from HuggingFace
+- Full experimentation pipeline
+- Research and development
+
 ---
 
 ## Core objective
@@ -475,36 +508,69 @@ Keep only if:
 
 Every experiment must be logged to `results.tsv` as a **tab-separated** file.
 
+**This is mandatory for all runs**, including:
+- Pure C++ engine tests
+- Python training runs
+- Export/quantization experiments
+- Benchmark comparisons
+
+### TSV Format
+
 Use this header:
 
 ```tsv
-commit\ttag\tlane\tmodel\tquality\tload_s\ttoks_per_s\tpeak_ram_gb\tartifact_mb\tstatus\tdescription
+commit	tag	lane	model	quality	load_s	toks_per_s	peak_ram_gb	artifact_mb	status	description
 ```
 
 Column meanings:
 
 1. `commit` — short git hash, or `workspace` if uncommitted
-2. `tag` — run tag such as `mar26-gpt2-50m`
+2. `tag` — run tag such as `mar26-gpt2-50m` or `mar27-cpp-engine`
 3. `lane` — `quick`, `long`, `deploy`, `repair`
-4. `model` — teacher/student identifier
-5. `quality` — primary metric value
+4. `model` — teacher/student identifier (e.g., `test-model-2L`, `smollm2-60m`)
+5. `quality` — primary metric value (perplexity, or `N/A` for engine-only tests)
 6. `load_s` — model load time in seconds
-7. `toks_per_s` — throughput
+7. `toks_per_s` — throughput (tokens per second)
 8. `peak_ram_gb` — peak memory in GB
 9. `artifact_mb` — artifact size in MB
 10. `status` — `keep`, `discard`, `crash`
 11. `description` — short concrete description of the experiment
 
-Example:
+### Examples
 
 ```tsv
-commit\ttag\tlane\tmodel\tquality\tload_s\ttoks_per_s\tpeak_ram_gb\tartifact_mb\tstatus\tdescription
-1a2b3c4\tmar26-gpt2-50m\tquick\tgpt2-student-v1\t22.480\t0.9\t18.2\t2.6\t108.4\tkeep\t6-layer dense student smoke test
-2b3c4d5\tmar26-gpt2-50m\tdeploy\tgpt2-student-v1-int8\t22.610\t0.5\t28.7\t1.9\t58.1\tkeep\tonnx int8 export and cpp load path
-3c4d5e6\tmar26-smollm2-60m\tlong\tsmollm2-student-v2\t0.000\t0.0\t0.0\t0.0\t0.0\tcrash\tresume bug after checkpoint rotation
+commit	tag	lane	model	quality	load_s	toks_per_s	peak_ram_gb	artifact_mb	status	description
+1a2b3c4	mar26-gpt2-50m	quick	gpt2-student-v1	22.480	0.9	18.2	2.6	108.4	keep	6-layer dense student smoke test
+2b3c4d5	mar26-gpt2-50m	deploy	gpt2-student-v1-int8	22.610	0.5	28.7	1.9	58.1	keep	onnx int8 export and cpp load path
+3c4d5e6	mar26-smollm2-60m	long	smollm2-student-v2	0.000	0.0	0.0	0.0	0.0	crash	resume bug after checkpoint rotation
+workspace	mar27-cpp-engine	quick	test-model-2L	N/A	0.05	533	0.01	2.6	keep	pure C++ engine test on Termux
+workspace	mar27-cpp-engine	deploy	smollm2-60m-cpp	N/A	0.12	50	0.12	120	keep	C++ engine inference 60M model
 ```
 
-Do **not** use commas as separators.
+### Logging Script
+
+Use this pattern to log results:
+
+```bash
+# Append to results.tsv
+echo -e "workspace\tmar27-cpp-engine\tquick\ttest-model-2L\tN/A\t0.05\t533\t0.01\t2.6\tkeep\tpure C++ engine test" >> results.tsv
+```
+
+Or use the CLI:
+
+```bash
+python scripts/cli.py log --tag mar27-cpp-engine --lane quick --model test-model-2L --toks 533 --status keep --desc "pure C++ engine test"
+```
+
+### When to Log
+
+Log **immediately after** each experiment completes:
+- After C++ engine benchmark
+- After training run
+- After export succeeds/fails
+- After quality evaluation
+
+**Do not batch logs** - log each result as it happens.
 
 ---
 

@@ -15,6 +15,24 @@ Compress teacher models (e.g., **SmolLM2-360M**) into smaller students (**30-180
 
 ## 🚀 Quick Start
 
+### Option A: Pure C++ (No PyTorch - Termux/Android)
+
+For resource-constrained environments without PyTorch:
+
+```bash
+# Quick start (5 min)
+bash scripts/quick_start_cpp.sh
+
+# Manual steps:
+cd engine_cpp && make
+python ../scripts/generate_test_model.py --output test.slm
+./engine --model test.slm --input 0,1,2 --max_tokens 50
+```
+
+**See:** [`engine_cpp/README_CPP.md`](engine_cpp/README_CPP.md) for full C++ engine documentation.
+
+### Option B: Full Python Pipeline (Requires PyTorch)
+
 ### 1. Install Dependencies
 
 ```bash

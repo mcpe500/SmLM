@@ -1,10 +1,18 @@
 """Student model architecture generator."""
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Any
 import torch
 import torch.nn as nn
-from transformers import PretrainedConfig, PreTrainedModel
+
+# Optional transformers import
+try:
+    from transformers import PretrainedConfig, PreTrainedModel
+    HAS_TRANSFORMERS = True
+except ImportError:
+    HAS_TRANSFORMERS = False
+    PretrainedConfig = object
+    PreTrainedModel = torch.nn.Module
 
 
 @dataclass
