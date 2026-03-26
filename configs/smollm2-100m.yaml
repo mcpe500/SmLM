@@ -1,0 +1,44 @@
+# SmolLM2-360M to 100M Student Distillation
+
+# Student architecture
+student_config:
+  num_hidden_layers: 8
+  num_attention_heads: 8
+  hidden_size: 640
+  intermediate_size: 2560
+
+# Teacher model
+teacher:
+  name_or_path: HuggingFaceTB/SmolLM2-360M
+
+# Distillation hyperparameters
+distillation:
+  temperature: 2.0
+  alpha_kd: 0.7
+  alpha_ce: 0.3
+
+# Training hyperparameters
+training:
+  learning_rate: 5e-5
+  batch_size: 16
+  gradient_accumulation_steps: 4
+  num_epochs: 10
+  warmup_steps: 1000
+  max_grad_norm: 1.0
+
+# Dataset
+dataset:
+  name: wikitext
+  config: wikitext-2-raw-v1
+  max_seq_len: 512
+  num_samples: 10000
+
+# Checkpointing
+checkpoint:
+  save_steps: 5000
+  logging_steps: 100
+
+# Output
+output:
+  dir: checkpoints
+  run_tag: smollm2-100m-v1
